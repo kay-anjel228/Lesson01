@@ -119,3 +119,16 @@ tr:nth-child(even) {
     font-size: 12px;
     color: #555555;
 }
+
+.logout-button {
+    background-color: #dc3545;
+}
+
+.logout-button {
+    background-color: #bb2d3b;
+}
+
+.card a {
+    color: #2d6cdf;
+    font-weight: bold;
+}

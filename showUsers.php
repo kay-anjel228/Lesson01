@@ -1,3 +1,11 @@
+<?php
+
+require_once "functions.php";
+
+$users = readUsers();
+
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -22,56 +30,36 @@
 
         <h2>Зарегистрированные пользователи</h2>
 
-        <?php
+    <?php
 
-        $fileName = "users.txt";
-
-        if (!file_exists($fileName)) {
-            echo "<p class='error'>Файл users.txt не найден</p>";
-        } else {
-            $users = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-            if (count($users) === 0) {
-                echo "<p>Пользователей пока нет</p>";
+            if(count($users) === 0) {
+                echo "<p>Пользователей пока нету</p>";
             } else {
-                echo "<table>";
+                echo "<table border='1'>";
                     echo "<tr>";
-                        echo "<th>Login</th>";
-                        echo "<th>Password</th>";
+                        echo "<th>Логин</th>";
+                        echo "<th>Пароль</th>";
                         echo "<th>Email</th>";
-                        echo "<th>Name</th>";
-                        echo "<th>Age</th>";
-                        echo "<th>City</th>";
+                        echo "<th>Имя</th>";
+                        echo "<th>Возраст</th>";
+                        echo "<th>Город</th>";
                     echo "</tr>";
-
-                    foreach ($users as $user) {
+                    foreach($users as $user) {
                         $parts = explode(":", $user);
 
-                        $login = isset($parts[0]) ? $parts[0] : "";
-                        $password = isset($parts[1]) ? $parts[1] : "";
-                        $email = isset($parts[2]) ? $parts[2] : "";
-                        $name = isset($parts[3]) ? $parts[3] : "";
-                        $age = isset($parts[4]) ? $parts[4] : "";
-                        $city = isset($parts[5]) ? $parts[5] : "";
-
                         echo "<tr>";
-                            echo "<td>$login</td>";
-                            echo "<td class='hash'>$password</td>";
-                            echo "<td>$email</td>";
-                            echo "<td>$name</td>";
-                            echo "<td>$age</td>";
-                            echo "<td>$city</td>";
+                            echo "<td>$parts[0]</td>";
+                            echo "<td>$parts[1]</td>";
+                            echo "<td>$parts[2]</td>";
+                            echo "<td>$parts[3]</td>";
+                            echo "<td>$parts[4]</td>";
+                            echo "<td>$parts[5]</td>";
                         echo "</tr>";
                     }
-
                 echo "</table>";
             }
-        }
-
-        ?>
-
+    ?>
     </div>
-
 </div>
 
 </body>

@@ -1,5 +1,8 @@
 <?php
 
+require_once "functions.php";
+
+
 function loginExists($login)
 {
     $fileName = "users.txt";
@@ -19,22 +22,6 @@ function loginExists($login)
     }
 
     return false;
-}
-
-function addUser($user)
-{
-    $fileName = "users.txt";
-
-    $line =
-        $user["login"] . ":" .
-        $user["password"] . ":" .
-        $user["email"] . ":" .
-        $user["name"] . ":" .
-        $user["age"] . ":" .
-        $user["city"] .
-        PHP_EOL;
-
-    file_put_contents($fileName, $line, FILE_APPEND);
 }
 
 $message = "";

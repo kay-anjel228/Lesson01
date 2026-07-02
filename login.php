@@ -1,32 +1,5 @@
 <?php
-function checkUser($login, $password) 
-{
-    $fileName = "users.txt";
-
-
-    if (!file_exists($fileName)) {
-        return false;
-    }
-
-    $users = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-    foreach ($users as $user) {
-        $parts = explode(":", $user);
-
-        if (count($parts) < 6) {
-            continue;
-        }
-
-        $storedLogin = $parts[0];
-        $storedPasswordHash = $parts[1];
-
-        if ($storedLogin === $login && password_verify($password, $storedPasswordHash)) {
-            return true;
-        }
-    }
-
-    return false;
-}
+require_once "functions.php";
 
 $message = "";
 $messageClass = "";
@@ -42,6 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $message = "Введите логин и пароль";
         $messageClass = "error";
     } elseif (checkUser($login, $password)) {
+        setcookie("last_login", $login, time() + 86400);
+
         $message = "Добро пожаловать, $login";
         $messageClass = "success";
     } else {
@@ -88,6 +63,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <input type="password" name="password" value="<?php echo $password; ?>">
                 </div>
                 <button type="submit">Войти</button>
+            </form>
+
+            <br>
+
+            <form action="logout.php" method="post">
+                <button type="submit" class="logout-button">Выход</button>
             </form>
         </div>
     </div>
