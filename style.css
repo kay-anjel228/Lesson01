@@ -132,3 +132,11 @@ tr:nth-child(even) {
     color: #2d6cdf;
     font-weight: bold;
 }
+
+menu a:last-child {
+    background-color: #6c757d;
+}
+
+menu a:last-child:hover {
+    background-color: #565e64;
+}

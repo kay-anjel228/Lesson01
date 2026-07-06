@@ -1,5 +1,9 @@
 <?php
-setcookie("last_login", "", time() - 3600);
+session_start();
+
+unset($_SESSION["login"]);
+
+session_destroy();
 
 header("Location: login.php");
 ?>

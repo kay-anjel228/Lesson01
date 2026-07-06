@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once "functions.php";
 
 $users = readUsers();
@@ -29,35 +31,44 @@ if (isset($_COOKIE["last_login"])) {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-    <h1>Регистрация пользователей</h1>
+    <div class="container">
+        <h1>Регистрация пользователей</h1>
     
-    <nav class="menu">
-        <a href="index.php">Главная</a>
-        <a href="addUser.php">Регистрация</a>
-        <a href="login.php">Вход</a>
-        <a href="showUsers.php">Пользователи</a>
-    </nav>
+        <nav class="menu">
+            <a href="index.php">Главная</a>
 
-    <div class="card">
-        <h2>Главная страница</h2>
+            <?php if (isAuth()): ?>
+                <a href="showUsers.php">Пользователи</a>
+                <a href="cabinet.php">Личный кабинет</a>
+                <a href="logout.php">Выход</a>
+            <?php else: ?>    
+                <a href="addUser.php">Регистрация</a>
+                <a href="login.php">Вход</a>
+                <a href="showUsers.php">Пользователи</a>
+            <?php endif; ?>
+        </nav>
 
-        <h4>Это php приложение для регистрации пользователей.</h4>
-        
-        <p class='count'>Количество пользователей: <?php echo $usersCount; ?></p>
-        
-        <?php if ($lastUserText !== ""): ?>
-            <p class="success">
-                Последний вошедший пользователь:
-                <?php echo htmlspecialchars($lastUserText); ?>
+        <div class="card">
+            <h2>Главная страница</h2>
+            
+            <p>
+                Это php приложение для регистрации пользователей.
             </p>
-        <?php endif; ?>
+        
+            <p class='count'>Количество пользователей: <?php echo $usersCount; ?></p>
+        
+            <?php if ($lastUserText !== ""): ?>
+                <p class="success">
+                    Последний вошедший пользователь:
+                    <?php echo htmlspecialchars($lastUserText); ?>
+                </p>
+            <?php endif; ?>
 
-        <p>
+            <p>
             Используйте страницу регистрации, чтобы добавить нового пользователя.
             После этого перейдите на страницу входа и проверьте логин и пароль.
-        </p>
+            </p>
+        </div>
     </div>
-</div>
 </body>
 </html>

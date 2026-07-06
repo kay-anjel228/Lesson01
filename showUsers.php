@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once "functions.php";
 
 $users = readUsers();
@@ -21,21 +23,27 @@ $users = readUsers();
 
     <nav class="menu">
         <a href="index.php">Главная</a>
-        <a href="addUser.php">Регистрация</a>
-        <a href="login.php">Вход</a>
-        <a href="showUsers.php">Пользователи</a>
+
+        <?php if (isAuth()): ?>
+            <a href="showUsers.php">Пользователи</a>
+            <a href="cabinet.php">Личный кабинет</a>
+            <a href="logout.php">Выход</a>
+        <?php else: ?>    
+            <a href="addUser.php">Регистрация</a>
+            <a href="login.php">Вход</a>
+            <a href="showUsers.php">Пользователи</a>
+        <?php endif; ?>
     </nav>
 
     <div class="card">
 
         <h2>Зарегистрированные пользователи</h2>
 
-    <?php
-
+        <?php
             if(count($users) === 0) {
                 echo "<p>Пользователей пока нету</p>";
             } else {
-                echo "<table border='1'>";
+                echo "<table>";
                     echo "<tr>";
                         echo "<th>Логин</th>";
                         echo "<th>Пароль</th>";
@@ -44,21 +52,27 @@ $users = readUsers();
                         echo "<th>Возраст</th>";
                         echo "<th>Город</th>";
                     echo "</tr>";
+
                     foreach($users as $user) {
-                        $parts = explode(":", $user);
+                        $login = htmlspecialchars($user["login"]);
+                        $password = htmlspecialchars($user["password"]);
+                        $email = htmlspecialchars($user["email"]);
+                        $name = htmlspecialchars($user["name"]);
+                        $age = htmlspecialchars($user["age"]);
+                        $city = htmlspecialchars($user["city"]);
 
                         echo "<tr>";
-                            echo "<td>$parts[0]</td>";
-                            echo "<td>$parts[1]</td>";
-                            echo "<td>$parts[2]</td>";
-                            echo "<td>$parts[3]</td>";
-                            echo "<td>$parts[4]</td>";
-                            echo "<td>$parts[5]</td>";
+                            echo "<td>$login</td>";
+                            echo "<td class='hash'>$password</td>";
+                            echo "<td>$email</td>";
+                            echo "<td>$name</td>";
+                            echo "<td>$age</td>";
+                            echo "<td>$city</td>";
                         echo "</tr>";
                     }
                 echo "</table>";
             }
-    ?>
+        ?>
     </div>
 </div>
 

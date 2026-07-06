@@ -1,1 +1,2 @@
 tester:$2y$12$3gF0lyhvqODG3wI12FkoH.mqtJlX.yA64tLeYPd06WXc37LINCIq2:viktoria77iv@gmail.com:Виктория Иванова:21:Элиста
+tester4:$2y$12$xqjIDFpKlz9HAKlcAvssW.UPFYfg2mT/VVKtou5nYJl7HWXwVrDvG:bad1488@gmail.com:Артём:15:Элиста

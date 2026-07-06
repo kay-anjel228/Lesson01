@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 require_once "functions.php";
 
 $message = "";
@@ -6,6 +9,18 @@ $messageClass = "";
 
 $login = "";
 $password = "";
+
+if(isAuth()) {
+    $user = getCurrentUser();
+
+    if($user !== null) {
+        $message = "Вы уже авторизованы как " . $user["name"];
+    } else {
+        $message = "Вы уже авторизированы";
+    }
+
+    $messageClass = "success";
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $login = trim($_POST["login"]);
@@ -15,10 +30,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $message = "Введите логин и пароль";
         $messageClass = "error";
     } elseif (checkUser($login, $password)) {
+        $_SESSION["login"] = $login;
+
         setcookie("last_login", $login, time() + 86400);
 
-        $message = "Добро пожаловать, $login";
-        $messageClass = "success";
+        header("Location: cabinet.php");
+        exit;
     } else {
         $message = "Логин или пароль неверны";
         $messageClass = "error";
@@ -39,9 +56,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <nav class="menu">
             <a href="index.php">Главная</a>
-            <a href="addUser.php">Регистрация</a>
-            <a href="login.php">Вход</a>
-            <a href="showUsers.php">Пользователи</a>
+
+            <?php if (isAuth()): ?>
+                <a href="showUsers.php">Пользователи</a>
+                <a href="cabinet.php">Личный кабинет</a>
+                <a href="logout.php">Выход</a>
+            <?php else: ?>    
+                <a href="addUser.php">Регистрация</a>
+                <a href="login.php">Вход</a>
+                <a href="showUsers.php">Пользователи</a>
+            <?php endif; ?>
         </nav>
 
         <div class="card">
@@ -53,18 +77,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
             ?>
 
-            <form action="login.php" method="post">
-                <div class="form-group">
-                    <label>Login</label>
-                    <input type="text" name="login" value="<?php echo $login; ?>">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" value="<?php echo $password; ?>">
-                </div>
-                <button type="submit">Войти</button>
-            </form>
-
+            <?php if (!isAuth()): ?>
+                <form action="login.php" method="post">
+                    <div class="form-group">
+                        <label>Login</label>
+                        <input type="text" name="login" value="<?php echo $login; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" value="<?php echo $password; ?>">
+                    </div>
+                    <button type="submit">Войти</button>
+                </form>
+            <?php else: ?>
+                <p>
+                    <a href="cabinet.php">Перейти в личный кабинет</a>
+                </p>
+            <?php endif; ?>
+             
             <br>
 
             <form action="logout.php" method="post">

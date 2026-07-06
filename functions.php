@@ -68,4 +68,18 @@ function addUser(array $user)
 
     file_put_contents($fileName, $line, FILE_APPEND);
 }
+
+function isAuth()
+{
+    return isset($_SESSION["login"]);
+}
+
+function getCurrentUser()
+{
+    if(!isAuth()) {
+        return null;
+    }
+
+    return findUserByLogin($_SESSION["login"]);
+}
 ?>

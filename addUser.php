@@ -1,7 +1,8 @@
 <?php
 
-require_once "functions.php";
+session_start();
 
+require_once "functions.php";
 
 function loginExists($login)
 {
@@ -100,9 +101,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <nav class="menu">
         <a href="index.php">Главная</a>
-        <a href="addUser.php">Регистрация</a>
-        <a href="login.php">Вход</a>
-        <a href="showUsers.php">Пользователи</a>
+        <?php if (isAuth()): ?>
+            <a href="showUsers.php">Пользователи</a>
+            <a href="cabinet.php">Личный кабинет</a>
+            <a href="logout.php">Выход</a>
+        <?php else: ?>    
+            <a href="addUser.php">Регистрация</a>
+            <a href="login.php">Вход</a>
+            <a href="showUsers.php">Пользователи</a>
+        <?php endif; ?>
     </nav>
 
     <div class="card">
