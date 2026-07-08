@@ -4,27 +4,6 @@ session_start();
 
 require_once "functions.php";
 
-function loginExists($login)
-{
-    $fileName = "users.txt";
-
-    if (!file_exists($fileName)) {
-        return false;
-    }
-
-    $users = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-    foreach ($users as $user) {
-        $parts = explode(":", $user);
-
-        if (isset($parts[0]) && $parts[0] === $login) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 $message = "";
 $messageClass = "";
 
@@ -55,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (!is_numeric($age)) {
         $message = "Возраст должен быть числом";
         $messageClass = "error";
-    } elseif (loginExists($login)) {
+    } elseif (findUserByLogin($login) !== null) {
         $message = "Пользователь с таким логином уже существует";
         $messageClass = "error";
     } else {
@@ -82,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $age = "";
         $city = "";
     }
+
 }
 
 ?>

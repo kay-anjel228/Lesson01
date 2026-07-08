@@ -54,6 +54,7 @@ $users = readUsers();
                     echo "</tr>";
 
                     foreach($users as $user) {
+                        $id = htmlspecialchars($user["id"]);
                         $login = htmlspecialchars($user["login"]);
                         $password = htmlspecialchars($user["password"]);
                         $email = htmlspecialchars($user["email"]);
@@ -61,13 +62,17 @@ $users = readUsers();
                         $age = htmlspecialchars($user["age"]);
                         $city = htmlspecialchars($user["city"]);
 
+                        $profileURL = "profile.php?login=" . urldecode($user["login"]); 
+
                         echo "<tr>";
+                            echo "<td>$id</td>";
                             echo "<td>$login</td>";
                             echo "<td class='hash'>$password</td>";
                             echo "<td>$email</td>";
                             echo "<td>$name</td>";
                             echo "<td>$age</td>";
                             echo "<td>$city</td>";
+                            echo "<td><a href='$profileURL'>Открыть</a></td>";
                         echo "</tr>";
                     }
                 echo "</table>";

@@ -1,45 +1,35 @@
 <?php
+
+require_once 'db.php';
+
 function readUsers() {
-    $fileName = "users.txt";
+   $pdo = getDb();
 
-    if (!file_exists($fileName)) {
-        return [];
-    }
+   $sql = "SELECT * FROM users ORDER BY id DESC";
 
-    $lines = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+   $stmt = $pdo->query($sql);
 
-    $users = [];
-
-    foreach ($lines as $line) {
-        $parts = explode(":", $line);
-        if (count($parts) < 6) {
-            continue;
-        }
-
-        $users[] = [
-            "login" => $parts[0],
-            "password" => $parts[1],
-            "email" => $parts[2],
-            "name" => $parts[3],
-            "age" => $parts[4],
-            "city" => $parts[5],
-        ];
-    }
-
-    return $users;
+   return $stmt->fetchAll();
 }
 
 function findUserByLogin(string $login) {
-    $users = readUsers();
+    $pdo = getDb();
 
-    foreach ($users as $user) {
-        if ($user["login"] === $login) {
-            return $user;
-        }
+    $sql = "SELECT * FROM users WHERE login = :login";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        "login" => $login
+    ]);
+
+    $user = $stmt->fetch();
+
+    if ($user === false) {
+        return null;
     }
 
-    return null;
-    
+    return $user;
 }
 
 function checkUser(string $login, string $password) 
@@ -55,18 +45,23 @@ function checkUser(string $login, string $password)
 
 function addUser(array $user)
 {
-    $fileName = "users.txt";
+    $pdo = getDb();
 
-    $line =
-        $user["login"] . ":" .
-        $user["password"] . ":" .
-        $user["email"] . ":" .
-        $user["name"] . ":" .
-        $user["age"] . ":" .
-        $user["city"] .
-        PHP_EOL;
+    $sql = "
+        INSERT INTO users (login, password, email, name, age, city)
+        VALUE (:login, :password, :email, :name, :age, :city)
+    ";
 
-    file_put_contents($fileName, $line, FILE_APPEND);
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        "login" => $user["login"],
+        "password" => $user["password"],
+        "email" => $user["email"],
+        "name" => $user["name"],
+        "age" => $user["age"],
+        "city" => $user["city"]
+    ]);
 }
 
 function isAuth()
