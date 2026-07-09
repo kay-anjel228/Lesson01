@@ -51,6 +51,9 @@ $users = readUsers();
                         echo "<th>Имя</th>";
                         echo "<th>Возраст</th>";
                         echo "<th>Город</th>";
+                        echo "<th>Profile</th>";
+                        echo "<th>Edit</th>";
+                        echo "<th>Delete</th>";
                     echo "</tr>";
 
                     foreach($users as $user) {
@@ -62,7 +65,10 @@ $users = readUsers();
                         $age = htmlspecialchars($user["age"]);
                         $city = htmlspecialchars($user["city"]);
 
-                        $profileURL = "profile.php?login=" . urldecode($user["login"]); 
+                        $profileURL = "profile.php?id=" . urldecode($id);
+                        $editURL = "editUser.php?id=" . urldecode($id); 
+                        $deleteURL = "deleteUser.php?id=" . urldecode($id); 
+
 
                         echo "<tr>";
                             echo "<td>$id</td>";
@@ -73,6 +79,8 @@ $users = readUsers();
                             echo "<td>$age</td>";
                             echo "<td>$city</td>";
                             echo "<td><a href='$profileURL'>Открыть</a></td>";
+                            echo "<td><a href='$editURL'>Открыть</a></td>";
+                            echo "<td><a class='delete-link' href='$deleteURL'>Открыть</a></td>";
                         echo "</tr>";
                     }
                 echo "</table>";

@@ -124,8 +124,17 @@ tr:nth-child(even) {
     background-color: #dc3545;
 }
 
-.logout-button {
+.logout-button:hover {
     background-color: #bb2d3b;
+}
+
+.delete-link:hover {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.delete-link:hover {
+    color: #a71d2a;
 }
 
 .card a {

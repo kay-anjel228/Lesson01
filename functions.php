@@ -12,15 +12,15 @@ function readUsers() {
    return $stmt->fetchAll();
 }
 
-function findUserByLogin(string $login) {
+function findUserById(int $id) {
     $pdo = getDb();
 
-    $sql = "SELECT * FROM users WHERE login = :login";
+    $sql = "SELECT * FROM users WHERE id = :id";
 
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
-        "login" => $login
+        "id" => $id
     ]);
 
     $user = $stmt->fetch();
@@ -34,7 +34,7 @@ function findUserByLogin(string $login) {
 
 function checkUser(string $login, string $password) 
 {
-    $user = findUserByLogin($login);
+    $user = findUserById($login);
 
     if ($user === null) {
         return false;
@@ -43,24 +43,44 @@ function checkUser(string $login, string $password)
     return password_verify($password, $user["password"]);
 }
 
-function addUser(array $user)
+function updateUser(array $user)
 {
     $pdo = getDb();
 
     $sql = "
-        INSERT INTO users (login, password, email, name, age, city)
-        VALUE (:login, :password, :email, :name, :age, :city)
+        UPDATE users
+        SET
+            login = :login,
+            email = :email,
+            name = :name,
+            age = :age,
+            city = :city,
+            login = :login,
+        WHERE id = :id
     ";
 
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
+        "id" => $user["id"],
         "login" => $user["login"],
-        "password" => $user["password"],
         "email" => $user["email"],
         "name" => $user["name"],
         "age" => $user["age"],
         "city" => $user["city"]
+    ]);
+}
+
+function deleteUser(int $id)
+{
+    $pdo = getDb();
+
+    $sql = "DELETE FROM users WHERE id = :id";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        "id" => $id
     ]);
 }
 
@@ -75,6 +95,6 @@ function getCurrentUser()
         return null;
     }
 
-    return findUserByLogin($_SESSION["login"]);
+    return findUserById($_SESSION["id"]);
 }
 ?>

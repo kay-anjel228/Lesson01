@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (!is_numeric($age)) {
         $message = "Возраст должен быть числом";
         $messageClass = "error";
-    } elseif (findUserByLogin($login) !== null) {
+    } elseif (findUserById($login) !== null) {
         $message = "Пользователь с таким логином уже существует";
         $messageClass = "error";
     } else {
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             "city" => $city
         ];
 
-        addUser($user);
+        updateUser($user);
 
         $message = "Пользователь успешно добавлен";
         $messageClass = "success";

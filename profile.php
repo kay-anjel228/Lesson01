@@ -5,13 +5,16 @@ require_once "functions.php";
 $user = null;
 $message = "";
 
-if (isset($_GET["login"])) {
-    $login = trim($_GET["login"]);
-    $user = findUserByLogin($login);
+if (!isAuth())
+{
+    $message = "Необходимо авторизоваться";
+} elseif (isset($_GET["id"])) {
+    $id = (int)($_GET["id"]);
+    $user = findUserById($id);
 
     if ($user === null) {
         $message = "Пользователь не найден";
-    } 
+    }
 } else {
     $message = "Логин пользователя не передан";
 }
