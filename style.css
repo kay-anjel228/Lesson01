@@ -128,13 +128,17 @@ tr:nth-child(even) {
     background-color: #bb2d3b;
 }
 
-.delete-link:hover {
+.delete-button {
     color: #dc3545;
-    font-weight: bold;
+    padding: 8px 12px;
 }
 
 .delete-link:hover {
-    color: #a71d2a;
+    color: #bb2d3b;
+}
+
+td form {
+    margin: 0;
 }
 
 .card a {
@@ -149,3 +153,11 @@ menu a:last-child {
 menu a:last-child:hover {
     background-color: #565e64;
 }
+
+.reset-link {
+    display: inline-block;
+    margin-left: 10px;
+    color: #6c757d;
+    font-weight: bold;
+}
+

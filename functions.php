@@ -97,4 +97,42 @@ function getCurrentUser()
 
     return findUserById($_SESSION["id"]);
 }
+
+function searchUserByCity($city) 
+{
+    $pdo = getDb();
+
+    $sql = "
+        SELECT *
+        FROM users
+        WHERE city LIKE :city
+        ORDER BY id DESC
+    ";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        "city" => "%" . $city , "%"
+    ]);
+
+    return $stmt->fetchAll();
+}
+
+function updateUserPassword(int $id, string $passwordHash)
+{
+    $pdo = getDb();
+
+    $sql = "
+        UPDATE users
+        SET password = :password
+        WHERE id = :id
+    ";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        "password" => $passwordHash,
+        "id" => $id
+    ]);
+}
 ?>

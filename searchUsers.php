@@ -4,7 +4,18 @@ session_start();
 
 require_once "functions.php";
 
-$users = readUsers();
+$city = "";
+$users = [];
+$searchStared = false;
+
+if (isset($_GET["city"])) {
+    $searchStared = true;
+    $city = trim($_GET["city"]);
+
+    if ($city !== "") {
+        $users = searchUserByCity($city);
+    }
+}
 
 ?>
 
@@ -12,14 +23,14 @@ $users = readUsers();
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Список пользователей</title>
+    <title>Поиск пользователей</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Список пользователей</h1>
+    <h1>Поиск пользователей</h1>
 
     <nav class="menu">
         <a href="index.php">Главная</a>
@@ -37,11 +48,37 @@ $users = readUsers();
 
     <div class="card">
 
-        <h2>Зарегистрированные пользователи</h2>
+        <h2>Поиск по городу</h2>
 
-        <?php if (count($users) === 0): ?>
-            <p>Пользователей пока нет</p>
+        <form action="searchUsers.php" method="get">
+            <div class="form-group">
+                <label for="form-group">Город</label>
+                <input
+                    id="city"
+                    type="text"
+                    name="city"
+                    value="<?php echo htmlspecialchars($city) ?>"
+                    placeholder="Например: Москва"
+                >
+            </div>
+            
+            <button type="submit">Найти</button>
+
+            <?php if ($city !== ""): ?>
+                <a href="searchUsers.php" class="reset-link">Сбросить</a>
+            <?php endif; ?>
+        </form>
+
+        <?php if ($searchStared): ?>
+            <h2>Результаты поиска</h2>
+
+            <?php if ($city === ""): ?>
+                <p class="error">Введите название города.</p>
+            <?php elseif (count($users) === 0): ?>
+                <p>Пользователи из города "<?php echo htmlentities($city) ?>" не найдены</p>
         <?php else: ?>
+            <p class="success">Найдено пользователей : <?php count($users); ?></p>
+
             <table>
                 <tr>
                     <th>Id</th>
@@ -68,25 +105,11 @@ $users = readUsers();
                                 Открыть
                             </a>
                         </td>
-                        <td>
-                            <a href="editUser.php?id=<?php echo urldecode($user["id"]); ?>">
-                                Изменить
-                            </a>
-                        </td>
-                        <td>
-                            <form
-                                method="post"
-                                action="deleteUser.php"
-                                onsubmit="return confirm('Вы действительно хотите удалить пользователя?');"
-                            >
-                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($user["id"]); ?>">
-                                <button type="submit" class="delete-button">Удалить</button>
-                            </form>
-                        </td>
                     </tr>
                 <?php endforeach; ?>
             </table>
         <?php endif; ?>
+    <?php endif; ?>
     </div>
 
 </div>

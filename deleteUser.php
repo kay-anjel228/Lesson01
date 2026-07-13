@@ -9,24 +9,39 @@ if (!isAuth()) {
     exit;
 }
 
-$id = isset($_GET["id"]) ? (int)$_GET["id"] : 0;
-
-if ($id > 0) {
-    $user = findUserById($id);
-
-    if ($user !== null) {
-        deleteUser($id);
-
-        if (isset($_SESSION["login"]) && $_SESSION["login"] === $user["login"]) {
-            session_destroy();
-
-            header("Location: login.php");
-            exit;
-        }
-    }
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: showUsers.php");
+    exit;
 }
 
-header("Location: login.php");
-exit;
+$id = isset($_POST["id"]) ? (int)$_POST["id"] : 0;
 
+if ($id <= 0) {
+    header("Location: showUsers.php");
+}
+
+$user = findUserById($id);
+
+if ($user === null) {
+    header("Location: showUsers.php");
+    exit;
+}
+
+$isCurrentUser = (
+    isset($_SESSION["login"])
+    && $_SESSION["login"] === $user["login"]
+);
+
+deleteUser($id);
+
+if ($isCurrentUser) {
+    unset($_SESSION["login"]);
+    session_destroy();
+
+    header("Location: login.php");
+    exit;
+}
+
+header("Location: showUsers.php");
+exit;
 ?>
