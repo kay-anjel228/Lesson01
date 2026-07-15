@@ -8,71 +8,93 @@ $message = "";
 $messageClass = "";
 
 if (!isAuth()) {
-    $message = "Необходимо авторизоваться";
-    $messageClass = "error";
-    $user = null;
-} else {
-    $id = isset($_GET["id"]) ? (int)$_GET["id"] : 0;
-
-    $user = findUserById($id);
-
-    if ($user === null) {
-        $message = "Пользователь не найден";
-        $messageClass = "error";
-    }
+    header("Location: login.php");
+    exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isAuth())
-{
-    $id = (int)$_POST["id"];
+if (!isAdmin()) {
+    http_response_code(403);
 
-    $login = trim($_POST["login"]);
-    $email = trim($_POST["email"]);
-    $name = trim($_POST["name"]);
-    $age = trim($_POST["age"]);
-    $city = trim($_POST["city"]);
+    echo "Доступ запрещён. Редактировать пользователей может только администратор.";
+    exit;
+}
 
-    $user = findUserById($id);
+$id = isset($_GET["id"])
+    ? (int)$_GET["id"]
+    : 0;
 
-    if ($user === null) {
-        $message = "Пользователь не найден";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $id = isset($_POST["id"])
+        ? (int)$_POST["id"]
+        : 0;
+}
+
+$user = findUserByIdWithRole($id);
+$roles = readRoles();
+
+$message = "";
+$messageClass = "";
+
+if ($user == null) {
+    $message = "Пользователь не найден";
+    $messageClass = "error";
+}
+
+if (
+    $_SERVER["REQUEST_METHOD"] === "POST"
+    && $user !== null
+) {
+    $login = trim($_POST["login"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+    $name = trim($_POST["name"] ?? "");
+    $age= trim($_POST["age"] ?? "");
+    $city = trim($_POST["city"] ?? "");
+    $roleId= trim($_POST["role_id"])
+        ? (int)$_POST["role_id"]
+        : 0;
+
+    if ($login === "") {
+        $message = "Логин не должен быть пустым";
         $messageClass = "error";
-    } elseif ($login === "") {
-        $message = "Пользователь не должен быть пустым";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "Введите корректный email";
         $messageClass = "error";
-    } elseif (!is_numeric($age)) {
-        $message = "Возраст должен быть числом";
+    } elseif ($name === "") {
+        $message = "Имя не должно быть пустым";
+        $messageClass = "error";
+    } elseif ($roleId <= 0) {
+        $message = "Выберите роль пользователя";
         $messageClass = "error";
     } else {
-        $existingUser = findUserById($login);
+        $existingUser = findUserByLoginWithRole($login);
 
-        if ($existingUser !== null && (int)$existingUser["id"] !== $id) {
+        if (
+            $existingUser !== null 
+            && (int)$existingUser["id"] !== $id
+        ) {
             $message = "Пользователь с таким логином уже существует";
             $messageClass = "error";
         } else {
-            $updateUser = [
+            $oldLogin = $user["login"];
+
+            updateUserWithRole([
                 "id" => $id,
                 "login" => $login,
                 "email" => $email,
                 "name" => $name,
                 "age" => $age,
-                "city" => $city
-            ];
+                "city" => $city,
+                "role_id" => $roleId
+            ]);
 
-            updateUser($updateUser);
+            if ($_SESSION["login"] === $oldLogin) {
+                $_SESSION["login"] = $login;
+            }
+
+            $user = findUserByIdWithRole($id);
 
             $message = "Данные пользователя успешно обновлены";
             $messageClass = "success";
-
-            $user = findUserById($id);
-
-            if (isset($_SESSION["login"]) && $_SESSION["login"] !== $user["login"]) {
-                $currentUser = getCurrentUser();
-
-                if ($currentUser !== null && (int)$currentUser["id"] === $id) {
-                    $_SESSION["login"] = $user["login"]; 
-                }
-            }
         }
     }
 }
@@ -92,7 +114,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isAuth())
         <a href="index.php">Главная</a>
             <?php if (isAuth()): ?>
                 <a href="showUsers.php">Пользователи</a>
+                <a href="searchUsers.php">Поиск</a>
                 <a href="cabinet.php">Личный кабинет</a>
+                <a href="adminPanel.php">Админ-панель</a>
                 <a href="logout.php">Выход</a>
             <?php else: ?>    
                 <a href="addUser.php">Регистрация</a>
@@ -144,6 +168,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isAuth())
                     <label>City:</label>
                     <input type="text" name="city" value="<?php echo htmlspecialchars($user["city"]); ?>">
                 </div>
+
+                 <div class="form-group">
+                    <label for="role_id">Role:</label>
+                    <select id="role_id" name="role_id">
+                        <?php foreach ($roles as $role): ?>
+                            <option value="<?php echo htmlspecialchars($role["id"]); ?>
+                            <?php
+                                if ((int)$role["id"] === (int)$user["role_id"]) {
+                                    echo "selected";
+                                }
+                            ?>"
+                        >
+                            <?php echo htmlspecialchars($role["name"]); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                 </div>
+
 
                 <button type="submit">Сохранить изменения</button>
 

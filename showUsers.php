@@ -4,7 +4,7 @@ session_start();
 
 require_once "functions.php";
 
-$users = readUsers();
+$users = readUsersWithRoles();
 
 ?>
 
@@ -26,12 +26,20 @@ $users = readUsers();
 
         <?php if (isAuth()): ?>
             <a href="showUsers.php">Пользователи</a>
+            <a href="searchUsers.php">Поиск</a>
             <a href="cabinet.php">Личный кабинет</a>
+            <a href="changePassword.php">Сменить пароль</a>
+
+            <?php if (isAdmin()): ?>
+                <a href="adminPanel.php">Админ-пароль</a>
+            <?php endif; ?>
+
             <a href="logout.php">Выход</a>
         <?php else: ?>    
             <a href="addUser.php">Регистрация</a>
             <a href="login.php">Вход</a>
             <a href="showUsers.php">Пользователи</a>
+            <a href="searchUsers.php">Поиск</a>
         <?php endif; ?>
     </nav>
 
@@ -50,9 +58,12 @@ $users = readUsers();
                     <th>Name</th>
                     <th>Age</th>
                     <th>City</th>
+                    <th>Role</th>
                     <th>Profile</th>
-                    <th>Edit</th>
-                    <th>Delete</th>                    
+                    <?php if (isAdmin()): ?>
+                        <th>Edit</th>
+                        <th>Delete</th>         
+                    <?php endif; ?>           
                 </tr>
 
                 <?php foreach($users as $user): ?>
@@ -63,11 +74,14 @@ $users = readUsers();
                         <td><?php echo htmlspecialchars($user["name"]); ?></td>
                         <td><?php echo htmlspecialchars($user["age"]); ?></td>
                         <td><?php echo htmlspecialchars($user["city"]); ?></td>
+                        <td><?php echo htmlspecialchars($user["role_name"]); ?></td>
+
                         <td>
                             <a href="profile.php?id=<?php echo urldecode($user["id"]); ?>">
                                 Открыть
                             </a>
                         </td>
+                        <?php if (isAdmin()): ?>
                         <td>
                             <a href="editUser.php?id=<?php echo urldecode($user["id"]); ?>">
                                 Изменить
@@ -83,6 +97,7 @@ $users = readUsers();
                                 <button type="submit" class="delete-button">Удалить</button>
                             </form>
                         </td>
+                    <?php endif; ?>    
                     </tr>
                 <?php endforeach; ?>
             </table>
